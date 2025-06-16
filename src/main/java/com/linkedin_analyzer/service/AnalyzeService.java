@@ -5,37 +5,64 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.linkedin_analyzer.dto.LinkedinProfileDto;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linkedin_analyzer.dto.ProfileRequestDto;
+import com.linkedin_analyzer.dto.ProfileResponseDto;
+import com.linkedin_analyzer.model.LinkedinProfile;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AnalyzeService {
 
-    public void gerarSugestão(String cargoDesejado, MultipartFile linkedinCsv) {
+    private final RestClient client;
 
-        LinkedinProfileDto linkedinProfileDto = formatarCSV(linkedinCsv);
+    public ProfileResponseDto gerarSugestao(String cargoDesejado, MultipartFile linkedinCsv) throws JsonProcessingException {
 
-        ProfileRequestDto requestDto = new ProfileRequestDto(cargoDesejado, linkedinProfileDto);
+        ProfileRequestDto requestDto = montarDto(cargoDesejado, linkedinCsv);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        System.out.println("ENVIANDO PARA IA:");
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(requestDto));
+
+        return client.post()
+                .uri("http://localhost:8000/api/analyze")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(requestDto)
+                .retrieve()
+                .body(ProfileResponseDto.class);
 
     }
 
-    public LinkedinProfileDto formatarCSV(MultipartFile file) {
+    public ProfileRequestDto montarDto(String cargoDesejado, MultipartFile linkedinCsv) {
+        LinkedinProfile linkedinProfileDto = formatarCSV(linkedinCsv);
+        ProfileRequestDto requestDto = new ProfileRequestDto(cargoDesejado, linkedinProfileDto);
+        return requestDto;
+    }
+
+    public LinkedinProfile formatarCSV(MultipartFile file) {
         try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-            CsvToBean<LinkedinProfileDto> csvToBean = new CsvToBeanBuilder<LinkedinProfileDto>(reader)
-                    .withType(LinkedinProfileDto.class)
+            CsvToBean<LinkedinProfile> csvToBean = new CsvToBeanBuilder<LinkedinProfile>(reader)
+                    .withType(LinkedinProfile.class)
                     .withIgnoreLeadingWhiteSpace(true)
                     .build();
 
-            LinkedinProfileDto profileDto = csvToBean.parse().get(0);
+            LinkedinProfile profileDto = csvToBean.parse().get(0);
 
             return profileDto;
         } catch (IOException e) {
-            return null;
+            throw new IllegalArgumentException("Houve um erro ao tentar converter o CSV");
         }
     }
 
