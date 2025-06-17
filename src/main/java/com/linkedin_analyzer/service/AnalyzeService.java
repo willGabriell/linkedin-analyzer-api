@@ -27,14 +27,9 @@ public class AnalyzeService {
 
     private final RestClient client;
 
-    public ProfileResponseDto gerarSugestao(String cargoDesejado, MultipartFile linkedinCsv) throws JsonProcessingException {
+    public ProfileResponseDto gerarSugestao(String cargoDesejado, MultipartFile linkedinCsv) {
 
         ProfileRequestDto requestDto = montarDto(cargoDesejado, linkedinCsv);
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        System.out.println("ENVIANDO PARA IA:");
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(requestDto));
 
         return client.post()
                 .uri("http://localhost:8000/api/analyze")
