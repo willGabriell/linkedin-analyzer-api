@@ -1,4 +1,4 @@
-package com.linkedin_analyzer.dto;
+package com.linkedin_analyzer.analyze;
 
 import java.util.List;
 

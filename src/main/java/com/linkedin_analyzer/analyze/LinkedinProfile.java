@@ -1,4 +1,4 @@
-package com.linkedin_analyzer.model;
+package com.linkedin_analyzer.analyze;
 
 import com.opencsv.bean.CsvBindByName;
 import lombok.Data;

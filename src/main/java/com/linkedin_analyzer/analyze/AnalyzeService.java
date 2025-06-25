@@ -1,4 +1,4 @@
-package com.linkedin_analyzer.service;
+package com.linkedin_analyzer.analyze;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,9 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.linkedin_analyzer.dto.ProfileRequestDto;
-import com.linkedin_analyzer.dto.ProfileResponseDto;
-import com.linkedin_analyzer.model.LinkedinProfile;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 

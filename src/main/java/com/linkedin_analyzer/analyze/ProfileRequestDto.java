@@ -1,7 +1,6 @@
-package com.linkedin_analyzer.dto;
+package com.linkedin_analyzer.analyze;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.linkedin_analyzer.model.LinkedinProfile;
 
 public record ProfileRequestDto(
     @JsonProperty("cargo_desejado")
