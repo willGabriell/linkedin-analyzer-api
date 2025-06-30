@@ -1,4 +1,4 @@
-package com.linkedin_analyzer.config;
+package com.linkedin_analyzer.config.web;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
